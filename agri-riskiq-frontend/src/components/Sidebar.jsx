@@ -22,7 +22,10 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r hidden md:flex flex-col">
       <div className="p-6 border-b">
-        <h1 className="text-2xl font-bold text-green-700">AgriRiskIQ</h1>
+        <div className="flex items-center gap-3 mb-2">
+          <img src="/logo.png" alt="AgriRiskIQ Logo" className="w-10 h-10" />
+          <h1 className="text-2xl font-bold text-green-700">AgriRiskIQ</h1>
+        </div>
         <p className="text-xs text-gray-500 mt-1">Credit & Risk Intelligence</p>
       </div>
 
