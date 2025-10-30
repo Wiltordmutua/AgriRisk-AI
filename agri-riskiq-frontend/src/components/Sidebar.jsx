@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { BarChart3, Map, Bell, Brain, Settings, Users } from "lucide-react";
+import { BarChart3, Map, Bell, Brain, Settings, Users, Sliders } from "lucide-react";
 
 const Item = ({ to, icon: Icon, label }) => (
   <NavLink
@@ -31,6 +31,7 @@ export default function Sidebar() {
         </div>
         <Item to="/dashboard" icon={BarChart3} label="Dashboard" />
         <Item to="/portfolio" icon={Users} label="Credit Portfolio" />
+        <Item to="/simulation" icon={Sliders} label="Policy Simulation" />
         <Item to="/map" icon={Map} label="Map Intelligence" />
         <Item to="/alerts" icon={Bell} label="Alerts & Advisory" />
         <Item to="/explain" icon={Brain} label="Explainability" />

@@ -9,36 +9,41 @@ import SignupPage from "./pages/SignupPage";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import PortfolioPage from "./pages/PortfolioPage";
+import PolicySimulationPage from "./pages/PolicySimulationPage";
+import { AlertsProvider } from "./contexts/AlertsContext";
 
 export default function App() {
   return (
-    <Routes>
-      {/* Auth Routes - No Sidebar/Topbar */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      
-      {/* Dashboard Routes - With Sidebar/Topbar */}
-      <Route
-        path="/*"
-        element={
-          <div className="app-layout">
-            <Sidebar />
-            <div className="app-content">
-              <Topbar />
-              <main className="app-main">
-                <Routes>
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                  <Route path="/dashboard" element={<DashboardPage />} />
-                  <Route path="/map" element={<MapPage />} />
-                  <Route path="/alerts" element={<AlertsPage />} />
-                  <Route path="/explain" element={<ExplainPage />} />
-                  <Route path="/portfolio" element={<PortfolioPage />} />
-                </Routes>
-              </main>
+    <AlertsProvider>
+      <Routes>
+        {/* Auth Routes - No Sidebar/Topbar */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        
+        {/* Dashboard Routes - With Sidebar/Topbar */}
+        <Route
+          path="/*"
+          element={
+            <div className="app-layout">
+              <Sidebar />
+              <div className="app-content">
+                <Topbar />
+                <main className="app-main">
+                  <Routes>
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/map" element={<MapPage />} />
+                    <Route path="/alerts" element={<AlertsPage />} />
+                    <Route path="/explain" element={<ExplainPage />} />
+                    <Route path="/portfolio" element={<PortfolioPage />} />
+                    <Route path="/simulation" element={<PolicySimulationPage />} />
+                  </Routes>
+                </main>
+              </div>
             </div>
-          </div>
-        }
-      />
-    </Routes>
+          }
+        />
+      </Routes>
+    </AlertsProvider>
   );
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import { Users, FolderKanban, Brain, Calendar, TrendingUp, Activity, CheckCircle, AlertCircle, Clock } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+//import LiveAlertsPanel from "../components/LiveAlertsPanel";
 
 // Demo data for platform usage (line graph)
 const platformUsageData = [
