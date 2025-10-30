@@ -50,38 +50,38 @@ export default function PortfolioPage() {
   const avgScore = (portfolio.reduce((a, b) => a + b.creditScore, 0) / portfolio.length).toFixed(1);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="portfolio-container">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-semibold text-green-700">Credit Portfolio Monitoring</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className="portfolio-header-title">Credit Portfolio Monitoring</h2>
+        <p className="portfolio-header-subtitle">
           AI-driven continuous credit risk tracking for smallholder farmers.
         </p>
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg p-4 shadow">
-          <div className="text-xs text-gray-500">Average Credit Score</div>
-          <div className="text-2xl font-bold text-green-700">{avgScore}</div>
+      <div className="portfolio-summary-grid">
+        <div className="portfolio-summary-card">
+          <div className="portfolio-summary-label">Average Credit Score</div>
+          <div className="portfolio-summary-value">{avgScore}</div>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow">
-          <div className="text-xs text-gray-500">Active Farmers</div>
-          <div className="text-2xl font-bold text-green-700">{portfolio.length}</div>
+        <div className="portfolio-summary-card">
+          <div className="portfolio-summary-label">Active Farmers</div>
+          <div className="portfolio-summary-value">{portfolio.length}</div>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow flex items-center gap-2">
-          <AlertTriangle className="text-orange-500" size={20} />
+        <div className="portfolio-alert-card">
+          <AlertTriangle className="portfolio-alert-icon" size={20} />
           <div>
-            <div className="text-xs text-gray-500">At-Risk Borrowers</div>
-            <div className="text-lg font-bold text-orange-600">{risk}</div>
+            <div className="portfolio-alert-label">At-Risk Borrowers</div>
+            <div className="portfolio-alert-value">{risk}</div>
           </div>
         </div>
       </div>
 
       {/* Chart + AI Insight */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-sm font-semibold mb-2 text-gray-700">
+      <div className="portfolio-charts-grid">
+        <div className="portfolio-chart-card">
+          <h3 className="portfolio-chart-title">
             Portfolio Risk Distribution
           </h3>
           <ResponsiveContainer width="100%" height={260}>
@@ -104,14 +104,14 @@ export default function PortfolioPage() {
         </div>
 
         <motion.div
-          className="bg-white p-5 rounded-lg shadow flex flex-col justify-center"
+          className="portfolio-insight-card"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h3 className="text-sm font-semibold mb-2 text-gray-700">AI Monitoring Insight</h3>
-          <p className="text-gray-600 text-sm leading-relaxed">{insight}</p>
-          <p className="text-xs text-gray-400 mt-2">Auto-updating every 5 seconds</p>
+          <h3 className="portfolio-insight-title">AI Monitoring Insight</h3>
+          <p className="portfolio-insight-text">{insight}</p>
+          <p className="portfolio-insight-note">Auto-updating every 5 seconds</p>
         </motion.div>
       </div>
     </div>

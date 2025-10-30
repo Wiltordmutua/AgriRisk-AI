@@ -42,30 +42,30 @@ const systemMetrics = [
 ];
 
 const StatCard = ({ title, value, icon: Icon, trend, trendValue, color }) => (
-  <div className="bg-white rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow">
-    <div className="flex items-center justify-between mb-4">
-      <div className={`p-3 rounded-lg ${color}`}>
-        <Icon className="w-6 h-6 text-white" />
+  <div className="stat-card">
+    <div className="stat-card-header">
+      <div className={`stat-card-icon ${color}`}>
+        <Icon />
       </div>
       {trend && (
-        <div className={`flex items-center gap-1 text-sm font-medium ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-          <TrendingUp className="w-4 h-4" />
+        <div className={`stat-card-trend ${trend}`}>
+          <TrendingUp />
           <span>{trendValue}</span>
         </div>
       )}
     </div>
-    <h3 className="text-gray-600 text-sm font-medium mb-1">{title}</h3>
-    <p className="text-3xl font-bold text-gray-900">{value}</p>
+    <h3 className="stat-card-title">{title}</h3>
+    <p className="stat-card-value">{value}</p>
   </div>
 );
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="dashboard-container">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
-        <p className="text-gray-600 text-sm mt-1">
+        <h2 className="dashboard-header-title">Dashboard Overview</h2>
+        <p className="dashboard-header-subtitle">
           Monitor credit and risk trends, portfolio health, and satellite-based insights
         </p>
       </div>
@@ -107,10 +107,10 @@ export default function DashboardPage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Project Activity Chart (Left) */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Project Activity</h3>
-            <p className="text-sm text-gray-600">Daily new project creation this week</p>
+        <div className="chart-card">
+          <div className="chart-card-header">
+            <h3 className="chart-card-title">Project Activity</h3>
+            <p className="chart-card-subtitle">Daily new project creation this week</p>
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={projectActivityData}>
@@ -127,10 +127,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Platform Usage Chart (Right) */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Platform Usage</h3>
-            <p className="text-sm text-gray-600">Active user trends over time</p>
+        <div className="chart-card">
+          <div className="chart-card-header">
+            <h3 className="chart-card-title">Platform Usage</h3>
+            <p className="chart-card-subtitle">Active user trends over time</p>
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={platformUsageData}>
@@ -156,34 +156,28 @@ export default function DashboardPage() {
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity Feed (Left) */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
-            <p className="text-sm text-gray-600">Timeline of recent user and system actions</p>
+        <div className="chart-card">
+          <div className="chart-card-header">
+            <h3 className="chart-card-title">Recent Activity</h3>
+            <p className="chart-card-subtitle">Timeline of recent user and system actions</p>
           </div>
           <div className="space-y-4">
             {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-4 pb-4 border-b last:border-b-0">
-                <div className={`p-2 rounded-lg ${
-                  activity.type === 'create' ? 'bg-green-100' :
-                  activity.type === 'complete' ? 'bg-blue-100' :
-                  activity.type === 'update' ? 'bg-yellow-100' :
-                  activity.type === 'export' ? 'bg-purple-100' :
-                  'bg-gray-100'
-                }`}>
-                  {activity.type === 'create' && <FolderKanban className="w-4 h-4 text-green-600" />}
-                  {activity.type === 'complete' && <CheckCircle className="w-4 h-4 text-blue-600" />}
-                  {activity.type === 'update' && <Activity className="w-4 h-4 text-yellow-600" />}
-                  {activity.type === 'export' && <TrendingUp className="w-4 h-4 text-purple-600" />}
-                  {activity.type === 'system' && <AlertCircle className="w-4 h-4 text-gray-600" />}
+              <div key={activity.id} className="activity-item">
+                <div className={`activity-icon ${activity.type}`}>
+                  {activity.type === 'create' && <FolderKanban />}
+                  {activity.type === 'complete' && <CheckCircle />}
+                  {activity.type === 'update' && <Activity />}
+                  {activity.type === 'export' && <TrendingUp />}
+                  {activity.type === 'system' && <AlertCircle />}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">{activity.user}</p>
-                  <p className="text-sm text-gray-600">{activity.action}</p>
-                  <p className="text-xs text-gray-500 mt-1">{activity.project}</p>
+                <div className="activity-content">
+                  <p className="activity-user">{activity.user}</p>
+                  <p className="activity-action">{activity.action}</p>
+                  <p className="activity-project">{activity.project}</p>
                 </div>
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Clock className="w-3 h-3" />
+                <div className="activity-time">
+                  <Clock />
                   <span>{activity.time}</span>
                 </div>
               </div>
@@ -192,39 +186,35 @@ export default function DashboardPage() {
         </div>
 
         {/* System Health Panel (Right) */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">System Health</h3>
-            <p className="text-sm text-gray-600">Real-time system performance overview</p>
+        <div className="chart-card">
+          <div className="chart-card-header">
+            <h3 className="chart-card-title">System Health</h3>
+            <p className="chart-card-subtitle">Real-time system performance overview</p>
           </div>
           <div className="space-y-6">
             {systemMetrics.map((metric, index) => (
-              <div key={index}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">{metric.name}</span>
-                  <span className={`text-sm font-semibold ${
-                    metric.status === 'good' ? 'text-green-600' : 'text-yellow-600'
-                  }`}>
+              <div key={index} className="system-metric">
+                <div className="system-metric-header">
+                  <span className="system-metric-name">{metric.name}</span>
+                  <span className={`system-metric-value ${metric.status}`}>
                     {metric.value}
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="system-metric-bar-container">
                   <div
-                    className={`h-2 rounded-full transition-all ${
-                      metric.status === 'good' ? 'bg-green-500' : 'bg-yellow-500'
-                    }`}
+                    className={`system-metric-bar ${metric.status}`}
                     style={{ width: `${metric.percentage}%` }}
                   ></div>
                 </div>
               </div>
             ))}
-            <div className="mt-6 pt-6 border-t">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-gray-700">System Status</span>
+            <div className="system-status">
+              <div className="system-status-container">
+                <div className="system-status-label-container">
+                  <div className="system-status-indicator"></div>
+                  <span className="system-status-label">System Status</span>
                 </div>
-                <span className="text-sm font-semibold text-green-600">All Systems Operational</span>
+                <span className="system-status-value">All Systems Operational</span>
               </div>
             </div>
           </div>

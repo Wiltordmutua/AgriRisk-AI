@@ -2,11 +2,11 @@ import React from "react";
 
 export default function ExplainPage() {
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-semibold text-green-700 mb-2">
+    <div className="simple-page-container">
+      <h2 className="simple-page-title">
         Explainability & Insights
       </h2>
-      <p className="text-gray-600 text-sm">
+      <p className="simple-page-description">
         View explainable AI metrics showing the factors influencing credit risk across different regions.
       </p>
     </div>

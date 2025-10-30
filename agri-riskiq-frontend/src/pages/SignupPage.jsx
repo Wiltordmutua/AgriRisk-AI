@@ -37,40 +37,40 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="auth-layout">
       {/* Left Side - Image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+      <div className="auth-image-section">
         <img
           src="/farmer-image.jpg"
           alt="Farmer with fresh produce"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="auth-image"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-agrigreen/30 to-deepblue/30"></div>
-        <div className="relative z-10 flex flex-col justify-end p-12 text-white">
-          <h1 className="text-4xl font-bold mb-4">AgriRiskIQ</h1>
-          <p className="text-lg opacity-90">
+        <div className="auth-image-overlay"></div>
+        <div className="auth-image-content">
+          <h1 className="auth-image-title">AgriRiskIQ</h1>
+          <p className="auth-image-subtitle">
             Join thousands of farmers making smarter decisions with data-driven insights
           </p>
         </div>
       </div>
 
       {/* Right Side - Signup Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-            <p className="text-gray-600">Get started with AgriRiskIQ today</p>
+      <div className="auth-form-section">
+        <div className="auth-form-container">
+          <div className="auth-form-header">
+            <h2 className="auth-form-title">Create Account</h2>
+            <p className="auth-form-subtitle">Get started with AgriRiskIQ today</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="auth-form signup">
             {/* Full Name Input */}
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="auth-input-group">
+              <label htmlFor="fullName" className="auth-input-label">
                 Full Name
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+              <div className="auth-input-wrapper">
+                <div className="auth-input-icon">
+                  <User />
                 </div>
                 <input
                   type="text"
@@ -79,20 +79,20 @@ export default function SignupPage() {
                   value={formData.fullName}
                   onChange={handleChange}
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-agrigreen focus:border-transparent transition-all"
+                  className="auth-input"
                   placeholder="John Doe"
                 />
               </div>
             </div>
 
             {/* Email Input */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="auth-input-group">
+              <label htmlFor="email" className="auth-input-label">
                 Email Address
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+              <div className="auth-input-wrapper">
+                <div className="auth-input-icon">
+                  <Mail />
                 </div>
                 <input
                   type="email"
@@ -101,20 +101,20 @@ export default function SignupPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-agrigreen focus:border-transparent transition-all"
+                  className="auth-input"
                   placeholder="you@example.com"
                 />
               </div>
             </div>
 
             {/* Phone Input */}
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="auth-input-group">
+              <label htmlFor="phone" className="auth-input-label">
                 Phone Number
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-5 w-5 text-gray-400" />
+              <div className="auth-input-wrapper">
+                <div className="auth-input-icon">
+                  <Phone />
                 </div>
                 <input
                   type="tel"
@@ -123,20 +123,20 @@ export default function SignupPage() {
                   value={formData.phone}
                   onChange={handleChange}
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-agrigreen focus:border-transparent transition-all"
+                  className="auth-input"
                   placeholder="+1 (555) 000-0000"
                 />
               </div>
             </div>
 
             {/* Password Input */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="auth-input-group">
+              <label htmlFor="password" className="auth-input-label">
                 Password
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+              <div className="auth-input-wrapper">
+                <div className="auth-input-icon">
+                  <Lock />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -145,31 +145,31 @@ export default function SignupPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-agrigreen focus:border-transparent transition-all"
+                  className="auth-input auth-input-with-toggle"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="auth-input-toggle"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye />
                   )}
                 </button>
               </div>
             </div>
 
             {/* Confirm Password Input */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="auth-input-group">
+              <label htmlFor="confirmPassword" className="auth-input-label">
                 Confirm Password
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+              <div className="auth-input-wrapper">
+                <div className="auth-input-icon">
+                  <Lock />
                 </div>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -178,39 +178,39 @@ export default function SignupPage() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-agrigreen focus:border-transparent transition-all"
+                  className="auth-input auth-input-with-toggle"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="auth-input-toggle"
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye />
                   )}
                 </button>
               </div>
             </div>
 
             {/* Terms and Conditions */}
-            <div className="flex items-start">
+            <div className="auth-terms">
               <input
                 id="terms"
                 name="terms"
                 type="checkbox"
                 required
-                className="h-4 w-4 mt-1 text-agrigreen focus:ring-agrigreen border-gray-300 rounded"
+                className="auth-terms-checkbox"
               />
-              <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="terms" className="auth-terms-label">
                 I agree to the{" "}
-                <a href="#" className="text-agrigreen hover:text-agrigreen/80 font-medium">
+                <a href="#" className="auth-terms-link">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="#" className="text-agrigreen hover:text-agrigreen/80 font-medium">
+                <a href="#" className="auth-terms-link">
                   Privacy Policy
                 </a>
               </label>
@@ -219,16 +219,16 @@ export default function SignupPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-agrigreen text-white py-3 px-4 rounded-lg font-medium hover:bg-agrigreen/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-agrigreen transition-all"
+              className="auth-submit-btn"
             >
               Create Account
             </button>
           </form>
 
           {/* Login Link */}
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="auth-footer-text signup">
             Already have an account?{" "}
-            <Link to="/login" className="font-medium text-agrigreen hover:text-agrigreen/80">
+            <Link to="/login" className="auth-footer-link">
               Sign in
             </Link>
           </p>

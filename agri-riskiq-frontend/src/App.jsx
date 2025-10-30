@@ -21,11 +21,11 @@ export default function App() {
       <Route
         path="/*"
         element={
-          <div className="min-h-screen flex">
+          <div className="app-layout">
             <Sidebar />
-            <div className="flex-1 flex flex-col">
+            <div className="app-content">
               <Topbar />
-              <main className="p-6 overflow-auto">
+              <main className="app-main">
                 <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
