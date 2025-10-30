@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { motion } from "framer-motion";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 
-const COLORS = ["#34A853", "#FB8C00", "#E53935"]; // green, orange, red
+const COLORS = ["#34A853", "#FBBC04", "#FB8C00", "#E53935"]; // green, yellow, orange, red
 
 export default function PortfolioPage() {
   const [portfolio, setPortfolio] = useState(mockPortfolio());
@@ -15,10 +15,10 @@ export default function PortfolioPage() {
     const interval = setInterval(() => {
       setPortfolio((prev) =>
         prev.map((p) => {
-          const delta = Math.random() * 10 - 5; // -5 to +5
+          const delta = (Math.random() * 2 - 1); // -1 to +1
           return {
             ...p,
-            creditScore: Math.max(20, Math.min(100, p.creditScore + delta)),
+            creditScore: Math.max(0, Math.min(10, p.creditScore + delta)),
           };
         })
       );
@@ -27,15 +27,17 @@ export default function PortfolioPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🧩 Count borrowers by risk category
-  const healthy = portfolio.filter((p) => p.creditScore >= 70).length;
-  const watch = portfolio.filter((p) => p.creditScore < 70 && p.creditScore >= 45).length;
-  const risk = portfolio.filter((p) => p.creditScore < 45).length;
+  // 🧩 Count borrowers by risk category (0-10 scale)
+  const lowRisk = portfolio.filter((p) => p.creditScore >= 7.5).length;
+  const moderateRisk = portfolio.filter((p) => p.creditScore >= 5 && p.creditScore < 7.5).length;
+  const highRisk = portfolio.filter((p) => p.creditScore >= 2.5 && p.creditScore < 5).length;
+  const criticalRisk = portfolio.filter((p) => p.creditScore < 2.5).length;
 
   const data = [
-    { name: "Healthy", value: healthy },
-    { name: "Watchlist", value: watch },
-    { name: "At Risk", value: risk },
+    { name: "Low Risk", value: lowRisk },
+    { name: "Moderate Risk", value: moderateRisk },
+    { name: "High Risk", value: highRisk },
+    { name: "Critical Risk", value: criticalRisk },
   ];
 
   // 🧠 Generate AI insight message
@@ -72,8 +74,8 @@ export default function PortfolioPage() {
         <div className="portfolio-alert-card">
           <AlertTriangle className="portfolio-alert-icon" size={20} />
           <div>
-            <div className="portfolio-alert-label">At-Risk Borrowers</div>
-            <div className="portfolio-alert-value">{risk}</div>
+            <div className="portfolio-alert-label">Critical Risk Borrowers</div>
+            <div className="portfolio-alert-value">{criticalRisk}</div>
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ export function mockPortfolio() {
     name: `Farmer ${i + 1}`,
     county: c,
     loanAmount: Math.round(50000 + Math.random() * 400000),
-    creditScore: Math.round(30 + Math.random() * 70),
+    creditScore: parseFloat((Math.random() * 10).toFixed(1)), // 0-10 scale with 1 decimal
     updated: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10),
   }));
 }

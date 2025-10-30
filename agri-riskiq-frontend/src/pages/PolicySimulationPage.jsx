@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sliders, TrendingDown, TrendingUp, DollarSign, CloudRain, Leaf, AlertTriangle, Play, RotateCcw } from "lucide-react";
+import { Sliders, TrendingDown, TrendingUp, DollarSign, CloudRain, Leaf, AlertTriangle, Play, RotateCcw, User, MapPin } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 // Demo weather scenarios
@@ -10,31 +10,44 @@ const weatherScenarios = [
   { id: 4, name: "Severe Drought", rainfall: 40, temperature: 35, description: "Critical water shortage" },
 ];
 
+// Calculate risk score based on scenario and land size (0-10 scale)
+const calculateRiskScore = (scenario, landSize) => {
+  // Base risk from weather scenario
+  let baseRisk = 5; // neutral
+  if (scenario.rainfall < 60) baseRisk = 8; // high risk for drought
+  else if (scenario.rainfall > 130) baseRisk = 6.5; // moderate risk for excess rain
+  else if (scenario.rainfall >= 90 && scenario.rainfall <= 110) baseRisk = 3; // low risk for normal
+  
+  // Adjust for land size (larger farms = slightly higher risk)
+  const landRiskFactor = Math.min(landSize / 50, 1) * 1.5;
+  
+  const finalRisk = Math.min(10, Math.max(0, baseRisk + landRiskFactor));
+  return parseFloat(finalRisk.toFixed(1));
+};
+
 // Generate simulation data based on parameters
 const generateSimulationData = (params) => {
-  const { rainfallThreshold, ndviThreshold, premium, coverageAmount, scenario } = params;
+  const { premium, coverageAmount, scenario, landSize } = params;
   
-  // Simulate NDVI changes over months based on rainfall
+  // Simulate rainfall and payout scenarios over months
   const rainfallFactor = scenario.rainfall / 100;
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   
   return months.map((month, index) => {
-    const baseNDVI = 0.6 + (rainfallFactor - 1) * 0.2;
-    const seasonalVariation = Math.sin((index / 12) * Math.PI * 2) * 0.1;
-    const randomVariation = (Math.random() - 0.5) * 0.05;
-    const ndvi = Math.max(0, Math.min(1, baseNDVI + seasonalVariation + randomVariation));
-    
     const rainfall = scenario.rainfall * (0.8 + Math.random() * 0.4);
-    const triggersPayout = ndvi < ndviThreshold || rainfall < rainfallThreshold;
-    const payoutAmount = triggersPayout ? coverageAmount * (1 - (ndvi / ndviThreshold)) : 0;
+    
+    // Payout triggered if rainfall drops below critical threshold
+    const criticalThreshold = 70; // mm
+    const triggersPayout = rainfall < criticalThreshold;
+    
+    // Payout is proportional to severity of loss
+    const severityFactor = triggersPayout ? Math.max(0, (criticalThreshold - rainfall) / criticalThreshold) : 0;
+    const payoutAmount = triggersPayout ? coverageAmount * severityFactor * 0.5 : 0; // max 50% of coverage per month
     
     return {
       month,
-      ndvi: parseFloat(ndvi.toFixed(3)),
       rainfall: parseFloat(rainfall.toFixed(1)),
-      payout: parseFloat(payoutAmount.toFixed(2)),
-      threshold: ndviThreshold,
-      rainfallThreshold,
+      payout: parseFloat(payoutAmount.toFixed(0)),
     };
   });
 };
@@ -42,8 +55,8 @@ const generateSimulationData = (params) => {
 export default function PolicySimulationPage() {
   const [selectedScenario, setSelectedScenario] = useState(weatherScenarios[0]);
   const [parameters, setParameters] = useState({
-    rainfallThreshold: 80,
-    ndviThreshold: 0.4,
+    farmerName: '',
+    farmLocation: '',
     premium: 50000,
     coverageAmount: 500000,
     landSize: 5,
@@ -56,7 +69,12 @@ export default function PolicySimulationPage() {
   const [hasSimulated, setHasSimulated] = useState(false);
 
   const handleParameterChange = (param, value) => {
-    setParameters(prev => ({ ...prev, [param]: parseFloat(value) }));
+    // Handle text inputs differently from numeric inputs
+    if (param === 'farmerName' || param === 'farmLocation') {
+      setParameters(prev => ({ ...prev, [param]: value }));
+    } else {
+      setParameters(prev => ({ ...prev, [param]: parseFloat(value) }));
+    }
   };
 
   const runSimulation = () => {
@@ -67,8 +85,8 @@ export default function PolicySimulationPage() {
 
   const resetSimulation = () => {
     setParameters({
-      rainfallThreshold: 80,
-      ndviThreshold: 0.4,
+      farmerName: '',
+      farmLocation: '',
       premium: 50000,
       coverageAmount: 500000,
       landSize: 5,
@@ -79,11 +97,13 @@ export default function PolicySimulationPage() {
   };
 
   // Calculate metrics
+  const riskScore = calculateRiskScore(selectedScenario, parameters.landSize);
   const totalPayouts = simulationData.reduce((sum, d) => sum + d.payout, 0);
   const totalPremiums = parameters.premium * parameters.numberOfPolicies * 12;
   const netPosition = totalPremiums - (totalPayouts * parameters.numberOfPolicies);
   const lossRatio = totalPremiums > 0 ? (totalPayouts * parameters.numberOfPolicies / totalPremiums * 100) : 0;
   const payoutMonths = simulationData.filter(d => d.payout > 0).length;
+  const avgMonthlyPayout = payoutMonths > 0 ? totalPayouts / payoutMonths : 0;
 
   return (
     <div className="policy-simulation-container">
@@ -151,40 +171,54 @@ export default function PolicySimulationPage() {
           </button>
         </div>
         <div className="policy-simulation-parameters">
-          {/* Rainfall Threshold */}
+          {/* Farmer Name */}
           <div className="policy-simulation-parameter">
             <div className="policy-simulation-parameter-header">
-              <label>Rainfall Threshold (mm)</label>
-              <span className="policy-simulation-parameter-value">{parameters.rainfallThreshold}</span>
+              <label>
+                <User size={16} style={{ display: 'inline', marginRight: '4px' }} />
+                Farmer Name
+              </label>
             </div>
             <input
-              type="range"
-              min="40"
-              max="120"
-              step="5"
-              value={parameters.rainfallThreshold}
-              onChange={(e) => handleParameterChange('rainfallThreshold', e.target.value)}
+              type="text"
+              placeholder="Enter farmer name"
+              value={parameters.farmerName}
+              onChange={(e) => handleParameterChange('farmerName', e.target.value)}
               className="policy-simulation-slider"
+              style={{ 
+                height: '40px', 
+                padding: '8px 12px', 
+                borderRadius: '8px', 
+                border: '1px solid #e5e7eb',
+                fontSize: '14px'
+              }}
             />
-            <p className="policy-simulation-parameter-hint">Minimum rainfall to avoid payout trigger</p>
+            <p className="policy-simulation-parameter-hint">Name of the farmer applying for insurance</p>
           </div>
 
-          {/* NDVI Threshold */}
+          {/* Farm Location */}
           <div className="policy-simulation-parameter">
             <div className="policy-simulation-parameter-header">
-              <label>NDVI Threshold</label>
-              <span className="policy-simulation-parameter-value">{parameters.ndviThreshold}</span>
+              <label>
+                <MapPin size={16} style={{ display: 'inline', marginRight: '4px' }} />
+                Farm Location
+              </label>
             </div>
             <input
-              type="range"
-              min="0.2"
-              max="0.7"
-              step="0.05"
-              value={parameters.ndviThreshold}
-              onChange={(e) => handleParameterChange('ndviThreshold', e.target.value)}
+              type="text"
+              placeholder="Enter farm location (e.g., Makueni County)"
+              value={parameters.farmLocation}
+              onChange={(e) => handleParameterChange('farmLocation', e.target.value)}
               className="policy-simulation-slider"
+              style={{ 
+                height: '40px', 
+                padding: '8px 12px', 
+                borderRadius: '8px', 
+                border: '1px solid #e5e7eb',
+                fontSize: '14px'
+              }}
             />
-            <p className="policy-simulation-parameter-hint">Minimum vegetation health index to avoid payout</p>
+            <p className="policy-simulation-parameter-hint">Geographic location of the farm</p>
           </div>
 
           {/* Premium */}
@@ -264,19 +298,79 @@ export default function PolicySimulationPage() {
       {/* Results */}
       {hasSimulated && (
         <>
+          {/* Farmer Information */}
+          {(parameters.farmerName || parameters.farmLocation) && (
+            <div className="policy-simulation-section">
+              <h3 className="policy-simulation-section-title">
+                <User />
+                Farmer Information
+              </h3>
+              <div className="policy-simulation-metrics" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+                {parameters.farmerName && (
+                  <div className="policy-simulation-metric-card">
+                    <div className="policy-simulation-metric-content">
+                      <p className="policy-simulation-metric-label">Farmer Name</p>
+                      <p className="policy-simulation-metric-value" style={{ fontSize: '1.25rem' }}>{parameters.farmerName}</p>
+                    </div>
+                  </div>
+                )}
+                {parameters.farmLocation && (
+                  <div className="policy-simulation-metric-card">
+                    <div className="policy-simulation-metric-content">
+                      <p className="policy-simulation-metric-label">Farm Location</p>
+                      <p className="policy-simulation-metric-value" style={{ fontSize: '1.25rem' }}>{parameters.farmLocation}</p>
+                    </div>
+                  </div>
+                )}
+                <div className="policy-simulation-metric-card">
+                  <div className="policy-simulation-metric-content">
+                    <p className="policy-simulation-metric-label">Land Size</p>
+                    <p className="policy-simulation-metric-value" style={{ fontSize: '1.25rem' }}>{parameters.landSize} acres</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Key Metrics */}
           <div className="policy-simulation-section">
-            <h3 className="policy-simulation-section-title">Simulation Results</h3>
+            <h3 className="policy-simulation-section-title">Policy Simulation Results</h3>
             <div className="policy-simulation-metrics">
+              <div className="policy-simulation-metric-card">
+                <div className={`policy-simulation-metric-icon ${riskScore < 4 ? 'good' : riskScore < 7 ? 'warning' : 'loss'}`}>
+                  <AlertTriangle />
+                </div>
+                <div className="policy-simulation-metric-content">
+                  <p className="policy-simulation-metric-label">Risk Score</p>
+                  <p className="policy-simulation-metric-value">{riskScore} / 10</p>
+                  <p className="policy-simulation-metric-detail">
+                    {riskScore < 4 ? 'Low Risk' : riskScore < 7 ? 'Moderate Risk' : 'High Risk'}
+                  </p>
+                </div>
+              </div>
+
               <div className="policy-simulation-metric-card">
                 <div className="policy-simulation-metric-icon premium">
                   <DollarSign />
                 </div>
                 <div className="policy-simulation-metric-content">
-                  <p className="policy-simulation-metric-label">Total Premiums</p>
-                  <p className="policy-simulation-metric-value">KES {totalPremiums.toLocaleString()}</p>
+                  <p className="policy-simulation-metric-label">Coverage Amount</p>
+                  <p className="policy-simulation-metric-value">KES {parameters.coverageAmount.toLocaleString()}</p>
                   <p className="policy-simulation-metric-detail">
-                    KES {parameters.premium.toLocaleString()} × {parameters.numberOfPolicies} × 12 months
+                    Maximum insured amount
+                  </p>
+                </div>
+              </div>
+
+              <div className="policy-simulation-metric-card">
+                <div className="policy-simulation-metric-icon premium">
+                  <TrendingUp />
+                </div>
+                <div className="policy-simulation-metric-content">
+                  <p className="policy-simulation-metric-label">Monthly Premium</p>
+                  <p className="policy-simulation-metric-value">KES {parameters.premium.toLocaleString()}</p>
+                  <p className="policy-simulation-metric-detail">
+                    Premium to pay per month
                   </p>
                 </div>
               </div>
@@ -286,12 +380,12 @@ export default function PolicySimulationPage() {
                   <TrendingDown />
                 </div>
                 <div className="policy-simulation-metric-content">
-                  <p className="policy-simulation-metric-label">Total Payouts</p>
+                  <p className="policy-simulation-metric-label">Avg Monthly Payout</p>
                   <p className="policy-simulation-metric-value">
-                    KES {(totalPayouts * parameters.numberOfPolicies).toLocaleString()}
+                    KES {avgMonthlyPayout.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </p>
                   <p className="policy-simulation-metric-detail">
-                    {payoutMonths} months triggered payouts
+                    {payoutMonths} months with payouts
                   </p>
                 </div>
               </div>
@@ -328,40 +422,31 @@ export default function PolicySimulationPage() {
 
           {/* Charts */}
           <div className="policy-simulation-charts">
-            {/* NDVI Trend */}
+            {/* Rainfall Trend */}
             <div className="chart-card">
               <div className="chart-card-header">
                 <h3 className="chart-card-title">
-                  <Leaf />
-                  NDVI Trend vs Threshold
+                  <CloudRain />
+                  Monthly Rainfall Trend
                 </h3>
-                <p className="chart-card-subtitle">Vegetation health over time</p>
+                <p className="chart-card-subtitle">Rainfall levels throughout the year</p>
               </div>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={simulationData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
-                  <YAxis stroke="#6b7280" fontSize={12} domain={[0, 1]} />
+                  <YAxis stroke="#6b7280" fontSize={12} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
                   />
                   <Legend />
                   <Line
                     type="monotone"
-                    dataKey="ndvi"
-                    stroke="#2e7d32"
+                    dataKey="rainfall"
+                    stroke="#3b82f6"
                     strokeWidth={2}
-                    name="NDVI"
-                    dot={{ fill: '#2e7d32', r: 3 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="threshold"
-                    stroke="#ef4444"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    name="Threshold"
-                    dot={false}
+                    name="Rainfall (mm)"
+                    dot={{ fill: '#3b82f6', r: 3 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
